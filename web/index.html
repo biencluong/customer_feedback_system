@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/styles.css?v=2" />
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -115,19 +115,19 @@
           <div class="badges" id="badges"></div>
         </div>
 
-        <div class="result-tabs">
+        <div class="result-tabs" role="tablist">
           <button type="button" class="result-tab active" data-result="report">Report</button>
           <button type="button" class="result-tab" data-result="trace">Agent trace</button>
           <button type="button" class="result-tab" data-result="json">JSON</button>
         </div>
 
-        <article class="report-view active" id="view-report"></article>
-        <div class="trace-view" id="view-trace" hidden></div>
-        <pre class="json-view" id="view-json" hidden></pre>
+        <article class="result-view report-view active" id="view-report" data-result-view="report"></article>
+        <div class="result-view trace-view" id="view-trace" data-result-view="trace"></div>
+        <pre class="result-view json-view" id="view-json" data-result-view="json"></pre>
       </div>
     </section>
   </main>
 
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=2"></script>
 </body>
 </html>

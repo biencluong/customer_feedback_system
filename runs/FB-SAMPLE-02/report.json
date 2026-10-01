@@ -8,68 +8,92 @@
     "submitted_at": "2026-09-29T02:40:00Z"
   },
   "classification": {
-    "category": "other",
+    "category": "bug_report",
     "secondary_category": null,
-    "sentiment": "neutral",
-    "urgency": "medium",
-    "confidence": 0.0,
-    "rationale": "Automatic classification unavailable (SimulatedLLMError: simulated classifier LLM failure); defaulted to manual triage."
+    "sentiment": "negative",
+    "urgency": "critical",
+    "confidence": 0.98,
+    "rationale": "The feedback states 'CSV export fails with Error 500 for every user' and 'our whole operations team relies on the daily export,' indicating a core functionality is blocked for a large group. The request for ASAP resolution further signals critical urgency."
   },
-  "summary": "[Automatic summary unavailable - verbatim excerpt] Since this morning's update, CSV export fails with 'Error 500' for every user on our workspace. Our whole operations team (250 people) relies on the daily export to plan shipments and we have nothing today. We need this fixed ASAP.",
+  "summary": "The customer, Alice Nguyen from Northwind Logistics (enterprise tier), reports that since a recent update, the CSV export feature fails with 'Error 500' for all users in their workspace. This issue is blocking their entire operations team (250 users) from performing daily shipment planning and is classified as a critical bug affecting core functionality.",
   "customer_found": true,
-  "customer_context": "Alice Nguyen (C001), enterprise tier, customer for 38 months, health score 82, open tickets: none.",
+  "customer_context": "Alice Nguyen (C001) is an enterprise-tier customer representing Northwind Logistics, with 250 seats and a high monthly spend. The reported issue is impacting all users in their workspace, and there are no open tickets currently. Past tickets do not indicate a similar issue.",
   "references": [
     {
-      "source_id": "SOP-GEN-01",
-      "title": "General / Unclear Feedback Triage",
-      "relevance": "Retrieved for the assigned category; verify fit."
+      "source_id": "SOP-BUG-01",
+      "title": "Handling Bug Reports",
+      "relevance": "Outlines steps for handling bug reports, including escalation for core functionality outages affecting enterprise customers."
+    },
+    {
+      "source_id": "POL-ESC-003",
+      "title": "Escalation Rules",
+      "relevance": "Requires immediate escalation to Engineering on-call for bugs blocking core features for enterprise customers or affecting multiple users."
     },
     {
       "source_id": "POL-SLA-002",
       "title": "Support Response SLA",
-      "relevance": "Retrieved for the assigned category; verify fit."
+      "relevance": "Mandates a 1-hour first response for critical issues for enterprise customers and reporting SLA breaches to the account manager."
     },
     {
       "source_id": "POL-CREDIT-007",
       "title": "Service Credit Policy",
-      "relevance": "Retrieved for the assigned category; verify fit."
+      "relevance": "Entitles enterprise customers to a 10% service credit if a core feature is unavailable for more than 4 hours."
     }
   ],
   "suggested_actions": [
     {
-      "action": "Read and triage this feedback manually; automated analysis was unavailable.",
+      "action": "Confirm the affected feature (CSV export), platform, and steps to reproduce with the customer; request screenshots if not already provided.",
       "owner": "CS officer",
-      "basis": null,
+      "basis": "SOP-BUG-01",
+      "requires_approval": false
+    },
+    {
+      "action": "Check past tickets for duplicate reports and link if found; otherwise, file a new engineering ticket with critical severity, including customer tier, ticket ID, and summary of impact.",
+      "owner": "CS officer",
+      "basis": "SOP-BUG-01",
+      "requires_approval": false
+    },
+    {
+      "action": "Immediately escalate the issue to Engineering on-call as it blocks core functionality for an enterprise customer and affects all users.",
+      "owner": "CS officer",
+      "basis": "POL-ESC-003",
+      "requires_approval": false
+    },
+    {
+      "action": "Acknowledge the issue to the customer within 1 hour and provide ongoing status updates, per SLA.",
+      "owner": "CS officer",
+      "basis": "POL-SLA-002",
+      "requires_approval": false
+    },
+    {
+      "action": "Notify the account manager (Minh Hoang) of the SLA breach and critical impact.",
+      "owner": "CS officer",
+      "basis": "POL-SLA-002",
+      "requires_approval": false
+    },
+    {
+      "action": "If the outage exceeds 4 hours, initiate a 10% service credit for the customer’s next invoice.",
+      "owner": "CS officer",
+      "basis": "POL-CREDIT-007",
       "requires_approval": false
     }
   ],
-  "confidence": "low",
+  "confidence": "high",
   "needs_human_review": true,
   "flags": [
     {
-      "code": "CLASSIFIER_FAILED",
-      "detail": "SimulatedLLMError: simulated classifier LLM failure"
-    },
-    {
-      "code": "REPORT_GENERATION_FAILED",
-      "detail": "SimulatedLLMError: simulated reporter LLM failure"
-    },
-    {
-      "code": "AGENT_FALLBACK",
-      "detail": "Context gathered by fixed fallback plan, not the agent."
-    },
-    {
-      "code": "MODEL_UNCERTAINTY",
-      "detail": "Report produced without LLM analysis."
+      "code": "HIGH_RISK",
+      "detail": "bug_report / critical urgency."
     }
   ],
   "sources_consulted": [
-    "SOP-GEN-01",
+    "SOP-BUG-01",
     "POL-CREDIT-007",
+    "POL-ESC-003",
     "POL-SLA-002"
   ],
-  "degraded": true,
-  "generated_at": "2026-09-30T09:59:09.599242Z",
+  "degraded": false,
+  "generated_at": "2026-10-01T08:31:48.208202Z",
   "review": {
     "status": "pending_review",
     "reviewer": null,

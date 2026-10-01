@@ -353,7 +353,28 @@ input:focus, select:focus, textarea:focus {
   border-bottom-color: var(--accent);
 }
 
-.report-view { display: grid; gap: 1rem; }
+/* Result tabs: hide by default; `.active` shows the selected view. */
+.result-view { display: none; }
+.report-view.active { display: grid; gap: 1rem; }
+.trace-view.active {
+  display: grid;
+  gap: 0.45rem;
+  max-height: 38rem;
+  overflow: auto;
+}
+.json-view.active {
+  display: block;
+  margin: 0;
+  padding: 1rem;
+  background: #0f1c24;
+  color: #d5e7e0;
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  max-height: 38rem;
+  overflow: auto;
+}
 .block {
   background: #fff;
   border: 1px solid var(--line);
@@ -401,12 +422,6 @@ input:focus, select:focus, textarea:focus {
   color: var(--danger);
 }
 
-.trace-view {
-  display: grid;
-  gap: 0.45rem;
-  max-height: 38rem;
-  overflow: auto;
-}
 .trace-row {
   display: grid;
   grid-template-columns: 4.5rem 1fr;
@@ -435,19 +450,6 @@ input:focus, select:focus, textarea:focus {
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 6rem;
-  overflow: auto;
-}
-
-.json-view {
-  margin: 0;
-  padding: 1rem;
-  background: #0f1c24;
-  color: #d5e7e0;
-  border-radius: 10px;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  line-height: 1.45;
-  max-height: 38rem;
   overflow: auto;
 }
 

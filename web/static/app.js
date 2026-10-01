@@ -66,16 +66,22 @@
     });
   }
 
+  function showResultView(which) {
+    document.querySelectorAll(".result-tab").forEach((b) => {
+      b.classList.toggle("active", b.dataset.result === which);
+    });
+    document.querySelectorAll(".result-view").forEach((el) => {
+      el.classList.toggle("active", el.dataset.resultView === which);
+    });
+  }
+
   function bindResultTabs() {
-    document.querySelectorAll(".result-tab").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".result-tab").forEach((b) => b.classList.toggle("active", b === btn));
-        const which = btn.dataset.result;
-        $("view-report").hidden = which !== "report";
-        $("view-report").classList.toggle("active", which === "report");
-        $("view-trace").hidden = which !== "trace";
-        $("view-json").hidden = which !== "json";
-      });
+    const tabs = document.querySelector(".result-tabs");
+    if (!tabs) return;
+    tabs.addEventListener("click", (e) => {
+      const btn = e.target.closest(".result-tab");
+      if (!btn) return;
+      showResultView(btn.dataset.result);
     });
   }
 
@@ -196,7 +202,7 @@
       .join("") || "<p class='lede'>No trace events.</p>";
     $("view-json").textContent = JSON.stringify(result, null, 2);
 
-    document.querySelector('.result-tab[data-result="report"]').click();
+    showResultView("report");
   }
 
   function buildReportHtml(r) {

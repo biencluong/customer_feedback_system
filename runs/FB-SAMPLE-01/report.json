@@ -13,21 +13,21 @@
     "sentiment": "negative",
     "urgency": "high",
     "confidence": 0.95,
-    "rationale": "The feedback states 'charged twice for my Pro subscription' and requests a refund for the 'extra charge,' indicating a billing issue with significant impact that needs same-day action."
+    "rationale": "The feedback states 'I was charged twice for my Pro subscription' and requests a refund, indicating a billing issue with significant impact that needs same-day action."
   },
-  "summary": "The customer, Bob Tran, reports being charged twice for his Pro subscription on September 25th and requests a refund for the extra $49 charge. Order history confirms two separate paid orders for the Pro plan on that date, each for $49, indicating a duplicate charge.",
+  "summary": "The customer, Bob Tran, reports being charged twice for his Pro subscription on September 25th and requests a refund for the extra charge. Order history confirms two separate paid orders of $49 each for the same plan on that date, indicating a duplicate charge.",
   "customer_found": true,
-  "customer_context": "Customer record found: Bob Tran (C002), Pro plan, single seat, monthly spend $49, customer since July 2025. Two paid orders for the Pro plan on September 25th, each for $49, confirming the duplicate charge. No open tickets or ongoing issues.",
+  "customer_context": "Customer record found: Bob Tran (C002), Pro plan, single seat, monthly spend $49, 15 months tenure. Two paid orders for the Pro plan on September 25th ($49 each, ORD-9120 and ORD-9121) confirm the duplicate charge. No open tickets; previous support contact was unrelated.",
   "references": [
     {
       "source_id": "SOP-BILL-01",
       "title": "Handling Billing Issues",
-      "relevance": "Specifies steps for verifying duplicate charges and issuing refunds without approval if under $500."
+      "relevance": "Specifies steps for verifying duplicate charges and issuing refunds per policy."
     },
     {
       "source_id": "POL-REFUND-001",
       "title": "Refund Policy",
-      "relevance": "Mandates full refund for duplicate charges regardless of the 14-day window; no approval needed for refunds under $500."
+      "relevance": "Allows full refund for duplicate charges regardless of the 14-day window; no approval needed for refunds under $500."
     }
   ],
   "suggested_actions": [
@@ -52,7 +52,7 @@
     "POL-REFUND-001"
   ],
   "degraded": false,
-  "generated_at": "2026-10-01T08:24:37.754893Z",
+  "generated_at": "2026-10-01T08:37:05.760523Z",
   "review": {
     "status": "pending_review",
     "reviewer": null,

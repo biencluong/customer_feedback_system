@@ -64,14 +64,17 @@ def create_app() -> FastAPI:
 
     @app.get("/api/health")
     def health() -> dict:
-        from ..azure_llm import azure_credentials_configured
+        from ..azure_llm import llm_credentials_configured, llm_provider, resolve_model_name
 
+        provider = llm_provider()
         return {
             "ok": True,
-            "azure_configured": azure_credentials_configured(),
-            "model": os.getenv("AZURE_OPENAI_DEPLOYMENT", os.getenv("OPENAI_MODEL", "gpt-4o-mini")),
-            "api_version": os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview"),
-            "endpoint_set": bool(os.getenv("AZURE_OPENAI_ENDPOINT")),
+            "azure_configured": provider == "azure",  # back-compat for older UI
+            "llm_configured": llm_credentials_configured(),
+            "provider": provider,
+            "model": resolve_model_name(),
+            "api_version": os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview") if provider == "azure" else None,
+            "endpoint_set": bool(os.getenv("AZURE_OPENAI_ENDPOINT")) if provider == "azure" else False,
             "simulations": list(SIMULATIONS),
         }
 

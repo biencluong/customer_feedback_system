@@ -62,7 +62,9 @@ def run_pipeline(
         if simulate in (stage, "llm"):
             raise SimulatedLLMError(f"simulated {stage} LLM failure")
         if llm is None:
-            raise RuntimeError("LLM client unavailable (are AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT set?)")
+            raise RuntimeError(
+                "LLM client unavailable (set OPENAI_API_KEY, or AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT)"
+            )
         return llm
 
     # 1. Classification (skip LLM when a human override is provided)

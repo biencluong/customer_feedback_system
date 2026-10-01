@@ -13,12 +13,16 @@ DATA_DIR = ROOT_DIR / "data"
 RUNS_DIR = ROOT_DIR / "runs"
 
 
+def _default_model() -> str:
+    from .azure_llm import resolve_model_name
+
+    return resolve_model_name()
+
+
 @dataclass
 class Settings:
-    # Azure OpenAI deployment name (not necessarily the underlying model id).
-    model: str = field(
-        default_factory=lambda: os.getenv("AZURE_OPENAI_DEPLOYMENT", os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
-    )
+    # Model id (OpenAI) or Azure deployment name.
+    model: str = field(default_factory=_default_model)
     temperature: float = 0.0
     request_timeout_s: float = 30.0
     # Retries on transient API errors (rate limits, 5xx, timeouts), handled by the OpenAI client.
@@ -31,12 +35,12 @@ class Settings:
 
 
 def build_llm(settings: Settings):
-    """Create the Azure OpenAI chat model. Raises if required Azure env vars are missing."""
-    from .azure_llm import AzureChatModel, build_azure_client
+    """Create the chat model for whichever provider credentials are configured."""
+    from .azure_llm import ChatModel, build_client
 
-    client = build_azure_client(
+    client = build_client(
         api_version=settings.api_version,
         timeout=settings.request_timeout_s,
         max_retries=settings.max_retries,
     )
-    return AzureChatModel(client=client, deployment=settings.model, temperature=settings.temperature)
+    return ChatModel(client=client, model=settings.model, temperature=settings.temperature)

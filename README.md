@@ -3,7 +3,8 @@
 Turns free-text customer feedback into a structured, grounded triage report for a CS officer:
 **intake → classification → tool-calling context agent → report → grounding checks → human review**.
 
-Python 3.9+, LangChain core for tools, and the **OpenAI Azure SDK** (`openai.AzureOpenAI`) for model calls.
+Python 3.9+, LangChain core for tools, and the **OpenAI Python SDK** for model calls
+(`openai.OpenAI` or `openai.AzureOpenAI`).
 No other infrastructure: the data sources are mocked as JSON files in `data/`. Intake is through the **web UI**
 (backed by FastAPI).
 
@@ -12,18 +13,20 @@ No other infrastructure: the data sources are mocked as JSON files in `data/`. I
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-cp .env.example .env        # then fill in Azure OpenAI settings
+cp .env.example .env        # then fill in OpenAI *or* Azure OpenAI settings
 ```
 
 | Env var | Required | Default |
 |---|---|---|
-| `AZURE_OPENAI_API_KEY` | yes | - |
-| `AZURE_OPENAI_ENDPOINT` | yes (e.g. `https://YOUR_RESOURCE.openai.azure.com/`) | - |
+| `OPENAI_API_KEY` | yes *(or Azure pair below)* | - |
+| `OPENAI_MODEL` | no | `gpt-4o-mini` |
+| `OPENAI_BASE_URL` | no (OpenAI-compatible proxies) | OpenAI default |
+| `AZURE_OPENAI_API_KEY` | yes with endpoint *(or `OPENAI_API_KEY`)* | - |
+| `AZURE_OPENAI_ENDPOINT` | yes with Azure key (e.g. `https://YOUR_RESOURCE.openai.azure.com/`) | - |
 | `AZURE_OPENAI_API_VERSION` | no | `2024-08-01-preview` |
-| `AZURE_OPENAI_DEPLOYMENT` | yes (Azure deployment name) | `gpt-4o-mini` |
-| `LANGCHAIN_TRACING_V2`, `LANGCHAIN_API_KEY` | no, enables LangSmith traces | off |
+| `AZURE_OPENAI_DEPLOYMENT` | no (Azure deployment name) | falls back to `OPENAI_MODEL` / `gpt-4o-mini` |
 
-Without the Azure key/endpoint, every LLM stage falls back to deterministic degraded behaviour (same as `--simulate llm` / UI "All LLM stages").
+If both Azure and OpenAI credentials are set, **Azure is preferred**. Without any key, every LLM stage falls back to deterministic degraded behaviour (same as `--simulate llm` / UI "All LLM stages").
 
 ## Run the UI
 
@@ -103,7 +106,7 @@ FeedbackReport (review.status = pending_review) ──► CS officer: approve / 
 | Module | Responsibility |
 |---|---|
 | `feedback_agent/config.py`, `models.py` | Settings and shared schemas |
-| `feedback_agent/azure_llm.py` | `AzureOpenAI` client + structured-output / tool-calling adapter |
+| `feedback_agent/azure_llm.py` | OpenAI / Azure OpenAI client + structured-output / tool-calling adapter |
 | `feedback_agent/agent/` | Pipeline, classifier, context agent, tools, reporter, prompts |
 | `feedback_agent/store/` | Mock CRM / policy / guideline data access |
 | `feedback_agent/app/` | FastAPI server, shared run service, render, human-review stub |

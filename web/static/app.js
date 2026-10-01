@@ -19,10 +19,14 @@
   async function loadHealth() {
     try {
       const h = await fetchJson("/api/health");
-      $("health-dot").className = "dot " + (h.azure_configured ? "ok" : "warn");
-      $("health-text").textContent = h.azure_configured
-        ? `Azure OpenAI ready · ${h.model}`
-        : `Azure creds missing · fallbacks only · ${h.model}`;
+      const ready = h.llm_configured ?? h.azure_configured;
+      $("health-dot").className = "dot " + (ready ? "ok" : "warn");
+      if (ready) {
+        const provider = h.provider === "openai" ? "OpenAI" : h.provider === "azure" ? "Azure OpenAI" : "LLM";
+        $("health-text").textContent = `${provider} ready · ${h.model}`;
+      } else {
+        $("health-text").textContent = `No LLM creds · fallbacks only · ${h.model}`;
+      }
     } catch (e) {
       $("health-dot").className = "dot warn";
       $("health-text").textContent = "API unreachable";

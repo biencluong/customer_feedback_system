@@ -1,44 +1,93 @@
-"""Azure OpenAI chat client used by the agent stages.
+"""OpenAI chat client used by the agent stages.
 
-Wraps `openai.AzureOpenAI` with the small surface the pipeline needs:
-structured outputs (via function calling) and a tool-calling loop.
-Credentials come from environment variables — see `.env.example`.
+Supports either:
+  - Azure OpenAI (`AZURE_OPENAI_API_KEY` + `AZURE_OPENAI_ENDPOINT`), or
+  - public OpenAI (`OPENAI_API_KEY`)
+
+Wraps the OpenAI SDK with the small surface the pipeline needs: structured outputs
+(via function calling) and a tool-calling loop. See `.env.example`.
 """
 
 from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 
-from openai import AzureOpenAI
+from openai import AzureOpenAI, OpenAI
 from pydantic import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
+OpenAIClient = Union[OpenAI, AzureOpenAI]
+
+
+def _env(name: str) -> str:
+    return os.getenv(name, "").strip()
 
 
 def _require_env(name: str) -> str:
-    value = os.getenv(name, "").strip()
+    value = _env(name)
     if not value:
         raise RuntimeError(f"Missing required environment variable: {name}")
     return value
 
 
-def build_azure_client(
+def llm_provider() -> str:
+    """Return 'azure', 'openai', or 'none' based on which credentials are present."""
+    if _env("AZURE_OPENAI_API_KEY") and _env("AZURE_OPENAI_ENDPOINT"):
+        return "azure"
+    if _env("OPENAI_API_KEY"):
+        return "openai"
+    return "none"
+
+
+def llm_credentials_configured() -> bool:
+    return llm_provider() != "none"
+
+
+# Back-compat alias used by older call sites / docs snippets.
+azure_credentials_configured = llm_credentials_configured
+
+
+def resolve_model_name() -> str:
+    if llm_provider() == "azure":
+        return _env("AZURE_OPENAI_DEPLOYMENT") or _env("OPENAI_MODEL") or "gpt-4o-mini"
+    return _env("OPENAI_MODEL") or _env("AZURE_OPENAI_DEPLOYMENT") or "gpt-4o-mini"
+
+
+def build_client(
     *,
-    api_key: Optional[str] = None,
-    endpoint: Optional[str] = None,
-    api_version: Optional[str] = None,
     timeout: float = 30.0,
     max_retries: int = 2,
-) -> AzureOpenAI:
-    return AzureOpenAI(
-        api_key=api_key or _require_env("AZURE_OPENAI_API_KEY"),
-        azure_endpoint=(endpoint or _require_env("AZURE_OPENAI_ENDPOINT")).rstrip("/"),
-        api_version=api_version or os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview"),
-        timeout=timeout,
-        max_retries=max_retries,
+    api_version: Optional[str] = None,
+) -> OpenAIClient:
+    provider = llm_provider()
+    if provider == "azure":
+        return AzureOpenAI(
+            api_key=_require_env("AZURE_OPENAI_API_KEY"),
+            azure_endpoint=_require_env("AZURE_OPENAI_ENDPOINT").rstrip("/"),
+            api_version=api_version or _env("AZURE_OPENAI_API_VERSION") or "2024-08-01-preview",
+            timeout=timeout,
+            max_retries=max_retries,
+        )
+    if provider == "openai":
+        kwargs: Dict[str, Any] = {
+            "api_key": _require_env("OPENAI_API_KEY"),
+            "timeout": timeout,
+            "max_retries": max_retries,
+        }
+        # Optional: custom base URL (OpenAI-compatible proxies, etc.)
+        base_url = _env("OPENAI_BASE_URL")
+        if base_url:
+            kwargs["base_url"] = base_url.rstrip("/")
+        return OpenAI(**kwargs)
+    raise RuntimeError(
+        "No LLM credentials found. Set OPENAI_API_KEY, or AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT."
     )
+
+
+# Older name kept so existing imports keep working.
+build_azure_client = build_client
 
 
 def _lc_message_to_openai(msg: Any) -> Dict[str, Any]:
@@ -87,8 +136,6 @@ def _lc_message_to_openai(msg: Any) -> Dict[str, Any]:
 
 def _tool_to_openai(tool: Any) -> Dict[str, Any]:
     schema = tool.args_schema.model_json_schema() if tool.args_schema else {"type": "object", "properties": {}}
-    # OpenAI function parameters should not carry Pydantic's $defs-only quirks if avoidable;
-    # model_json_schema is fine for our simple tool schemas.
     return {
         "type": "function",
         "function": {
@@ -120,14 +167,14 @@ class _AIMessage:
 
 
 class _StructuredRunner:
-    def __init__(self, llm: "AzureChatModel", schema: Type[T]):
+    def __init__(self, llm: "ChatModel", schema: Type[T]):
         self.llm = llm
         self.schema = schema
 
     def invoke(self, messages: List[Any]) -> T:
         tool = _schema_to_openai_tool(self.schema)
         response = self.llm.client.chat.completions.create(
-            model=self.llm.deployment,
+            model=self.llm.model,
             messages=[_lc_message_to_openai(m) for m in messages],
             tools=[tool],
             tool_choice={"type": "function", "function": {"name": self.schema.__name__}},
@@ -135,21 +182,21 @@ class _StructuredRunner:
         )
         choice = response.choices[0].message
         if not choice.tool_calls:
-            raise RuntimeError(f"Azure OpenAI returned no structured tool call for {self.schema.__name__}")
+            raise RuntimeError(f"LLM returned no structured tool call for {self.schema.__name__}")
         args = choice.tool_calls[0].function.arguments
         data = json.loads(args) if isinstance(args, str) else args
         return self.schema.model_validate(data)
 
 
 class _ToolBoundModel:
-    def __init__(self, llm: "AzureChatModel", tools: List[Any]):
+    def __init__(self, llm: "ChatModel", tools: List[Any]):
         self.llm = llm
         self.tools = tools
         self._openai_tools = [_tool_to_openai(t) for t in tools]
 
     def invoke(self, messages: List[Any]) -> _AIMessage:
         kwargs: Dict[str, Any] = {
-            "model": self.llm.deployment,
+            "model": self.llm.model,
             "messages": [_lc_message_to_openai(m) for m in messages],
             "temperature": self.llm.temperature,
         }
@@ -166,17 +213,19 @@ class _ToolBoundModel:
         return _AIMessage(content=message.content, tool_calls=tool_calls)
 
 
-class AzureChatModel:
-    """Thin adapter: AzureOpenAI SDK underneath, LangChain-compatible invoke helpers on top."""
+class ChatModel:
+    """Thin adapter: OpenAI/AzureOpenAI SDK underneath, LangChain-compatible invoke helpers on top."""
 
     def __init__(
         self,
-        client: AzureOpenAI,
-        deployment: str,
+        client: OpenAIClient,
+        model: str,
         temperature: float = 0.0,
     ):
         self.client = client
-        self.deployment = deployment
+        self.model = model
+        # Alias used by older call sites that passed `deployment=...`.
+        self.deployment = model
         self.temperature = temperature
 
     def with_structured_output(self, schema: Type[T], method: str = "function_calling") -> _StructuredRunner:
@@ -186,5 +235,5 @@ class AzureChatModel:
         return _ToolBoundModel(self, tools)
 
 
-def azure_credentials_configured() -> bool:
-    return bool(os.getenv("AZURE_OPENAI_API_KEY") and os.getenv("AZURE_OPENAI_ENDPOINT"))
+# Back-compat name.
+AzureChatModel = ChatModel

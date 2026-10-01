@@ -1,0 +1,95 @@
+[
+  {
+    "customer_id": "C001",
+    "name": "Alice Nguyen",
+    "email": "alice.nguyen@northwind.example",
+    "company": "Northwind Logistics",
+    "tier": "enterprise",
+    "customer_since": "2023-07-12",
+    "seats": 250,
+    "monthly_spend_usd": 12500,
+    "account_manager": "Minh Hoang",
+    "health_score": 82,
+    "past_tickets": [
+      {"ticket_id": "T-1041", "date": "2026-03-02", "category": "bug_report", "summary": "Dashboard slow to load for large datasets", "status": "resolved", "resolution_days": 3},
+      {"ticket_id": "T-1187", "date": "2026-07-19", "category": "feature_request", "summary": "Asked for SSO group mapping", "status": "resolved", "resolution_days": 12}
+    ],
+    "orders": [
+      {"order_id": "ORD-9001", "date": "2026-09-01", "item": "Enterprise plan - monthly", "amount_usd": 12500, "status": "paid"},
+      {"order_id": "ORD-8544", "date": "2026-08-01", "item": "Enterprise plan - monthly", "amount_usd": 12500, "status": "paid"}
+    ]
+  },
+  {
+    "customer_id": "C002",
+    "name": "Bob Tran",
+    "email": "bob.tran@gmail.example",
+    "company": null,
+    "tier": "pro",
+    "customer_since": "2025-07-03",
+    "seats": 1,
+    "monthly_spend_usd": 49,
+    "account_manager": null,
+    "health_score": 70,
+    "past_tickets": [
+      {"ticket_id": "T-1102", "date": "2026-01-15", "category": "account_access", "summary": "Password reset email not received", "status": "resolved", "resolution_days": 1}
+    ],
+    "orders": [
+      {"order_id": "ORD-9120", "date": "2026-09-25", "item": "Pro plan - monthly", "amount_usd": 49, "status": "paid"},
+      {"order_id": "ORD-9121", "date": "2026-09-25", "item": "Pro plan - monthly", "amount_usd": 49, "status": "paid"},
+      {"order_id": "ORD-8610", "date": "2026-08-25", "item": "Pro plan - monthly", "amount_usd": 49, "status": "paid"}
+    ]
+  },
+  {
+    "customer_id": "C003",
+    "name": "Carol Le",
+    "email": "carol.le@studio.example",
+    "company": "Le Design Studio",
+    "tier": "free",
+    "customer_since": "2026-07-20",
+    "seats": 1,
+    "monthly_spend_usd": 0,
+    "account_manager": null,
+    "health_score": 60,
+    "past_tickets": [],
+    "orders": []
+  },
+  {
+    "customer_id": "C004",
+    "name": "David Pham",
+    "email": "david.pham@brightcart.example",
+    "company": "BrightCart",
+    "tier": "pro",
+    "customer_since": "2024-07-08",
+    "seats": 12,
+    "monthly_spend_usd": 588,
+    "account_manager": null,
+    "health_score": 38,
+    "past_tickets": [
+      {"ticket_id": "T-1150", "date": "2026-05-04", "category": "bug_report", "summary": "Scheduled reports sent twice", "status": "resolved", "resolution_days": 9},
+      {"ticket_id": "T-1203", "date": "2026-08-11", "category": "bug_report", "summary": "Mobile app crashes on login", "status": "open", "resolution_days": null},
+      {"ticket_id": "T-1231", "date": "2026-09-10", "category": "billing_issue", "summary": "Asked why price increased at renewal", "status": "open", "resolution_days": null}
+    ],
+    "orders": [
+      {"order_id": "ORD-9077", "date": "2026-09-08", "item": "Pro plan - 12 seats monthly", "amount_usd": 588, "status": "paid"},
+      {"order_id": "ORD-8590", "date": "2026-08-08", "item": "Pro plan - 12 seats monthly", "amount_usd": 540, "status": "paid"}
+    ]
+  },
+  {
+    "customer_id": "C005",
+    "name": "Emma Vo",
+    "email": "emma.vo@helios.example",
+    "company": "Helios Health",
+    "tier": "enterprise",
+    "customer_since": "2026-04-15",
+    "seats": 80,
+    "monthly_spend_usd": 4800,
+    "account_manager": "Lan Tran",
+    "health_score": 90,
+    "past_tickets": [
+      {"ticket_id": "T-1170", "date": "2026-06-02", "category": "feature_request", "summary": "Requested audit log export", "status": "resolved", "resolution_days": 20}
+    ],
+    "orders": [
+      {"order_id": "ORD-9010", "date": "2026-09-15", "item": "Enterprise plan - monthly", "amount_usd": 4800, "status": "paid"}
+    ]
+  }
+]

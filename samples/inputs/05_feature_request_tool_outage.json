@@ -1,0 +1,7 @@
+{
+  "feedback_id": "FB-SAMPLE-05",
+  "text": "Love the new audit log export, it saved our compliance team hours. One thing that would help a lot: scheduled exports delivered to our S3 bucket every night.",
+  "customer_id": "C005",
+  "channel": "email",
+  "submitted_at": "2026-09-29T04:20:00Z"
+}

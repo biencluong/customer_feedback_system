@@ -1,0 +1,50 @@
+[
+  {
+    "policy_id": "POL-REFUND-001",
+    "title": "Refund Policy",
+    "tags": ["billing", "refund", "charge", "payment", "duplicate"],
+    "text": "Customers may request a full refund within 14 days of a charge. Duplicate or erroneous charges are refunded in full regardless of the 14-day window. After 14 days, subscription refunds are pro-rated for the unused portion of the billing period. Enterprise refunds follow the customer's contract terms. Any single refund above 500 USD requires approval from a Billing Manager before it is issued."
+  },
+  {
+    "policy_id": "POL-SLA-002",
+    "title": "Support Response SLA",
+    "tags": ["sla", "response", "time", "priority", "urgency", "tier"],
+    "text": "First-response targets by tier: Enterprise - 1 hour for critical/high urgency, 4 business hours otherwise. Pro - 4 business hours for critical/high urgency, 1 business day otherwise. Free - best effort, target 3 business days. Critical issues for any tier must be acknowledged within 1 hour. A breach of the Enterprise SLA must be reported to the account manager."
+  },
+  {
+    "policy_id": "POL-ESC-003",
+    "title": "Escalation Rules",
+    "tags": ["escalation", "engineering", "outage", "bug", "legal", "security", "critical"],
+    "text": "Escalate to Engineering on-call immediately when a bug blocks core functionality for an Enterprise customer or affects multiple customers. Escalate to the Security team for any suspected data exposure or account compromise. Escalate to Legal for threats of legal action or regulatory complaints. Escalate to the CS Lead when a customer has two or more unresolved tickets older than 14 days. Escalations must include the ticket ID, customer tier, and a summary of impact."
+  },
+  {
+    "policy_id": "POL-ABUSE-004",
+    "title": "Abusive Communication Policy",
+    "tags": ["abuse", "harassment", "threat", "profanity", "conduct"],
+    "text": "Customers are entitled to express frustration, but CS staff are not required to tolerate personal insults, harassment, or threats. For abusive language without threats, CS may respond once with a courteous conduct reminder and continue addressing the underlying issue. Threats of violence or doxxing must be escalated to Security immediately and the conversation paused. Account suspension for abuse requires CS Lead approval. Never retaliate or mirror the customer's tone."
+  },
+  {
+    "policy_id": "POL-RETENTION-005",
+    "title": "Retention and Cancellation Policy",
+    "tags": ["churn", "cancel", "cancellation", "retention", "discount", "competitor", "leave"],
+    "text": "When a paying customer signals intent to cancel, CS should first address the root cause. Pro customers with a health score below 50 are eligible for a retention offer of up to 20 percent off for 3 months, which a CS officer may apply directly. Retention offers for Enterprise customers must be approved by the account manager. Cancellation requests must be honored within 2 business days if the customer confirms after the offer."
+  },
+  {
+    "policy_id": "POL-PRIVACY-006",
+    "title": "Customer Data and Privacy Policy",
+    "tags": ["privacy", "data", "gdpr", "deletion", "export", "personal"],
+    "text": "Never disclose one customer's data to another party. Data export requests are fulfilled within 7 days and data deletion requests within 30 days, after identity verification. Suspected data leaks are handled under the Escalation Rules (Security)."
+  },
+  {
+    "policy_id": "POL-CREDIT-007",
+    "title": "Service Credit Policy",
+    "tags": ["credit", "outage", "downtime", "compensation", "sla", "bug"],
+    "text": "Enterprise customers are entitled to a service credit of 10 percent of the monthly fee for each confirmed incident where a core feature is unavailable for more than 4 hours. Pro customers may receive a goodwill credit of up to 1 month at CS Lead discretion. Credits are applied to the next invoice and are not paid as cash."
+  },
+  {
+    "policy_id": "POL-FEATURE-008",
+    "title": "Feature Request Handling Policy",
+    "tags": ["feature", "request", "roadmap", "suggestion", "enhancement"],
+    "text": "CS must not promise delivery dates or commit to building a requested feature. Feature requests are logged to the product feedback board with customer tier and use case. Requests from Enterprise customers are shared with the account manager and reviewed in the monthly product council."
+  }
+]

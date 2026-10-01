@@ -1,0 +1,88 @@
+[
+  {
+    "guideline_id": "SOP-BUG-01",
+    "category": "bug_report",
+    "title": "Handling Bug Reports",
+    "steps": [
+      "Confirm the affected feature, platform, and steps to reproduce; ask for screenshots if missing.",
+      "Check past tickets for the same issue and link duplicates.",
+      "If the bug blocks core functionality for an Enterprise customer or affects multiple customers, escalate per POL-ESC-003.",
+      "Otherwise, file an engineering ticket with severity matching the urgency and give the customer the ticket ID.",
+      "Consider service credits per POL-CREDIT-007 for prolonged outages."
+    ]
+  },
+  {
+    "guideline_id": "SOP-BILL-01",
+    "category": "billing_issue",
+    "title": "Handling Billing Issues",
+    "steps": [
+      "Verify the charge(s) against the customer's order history.",
+      "For duplicate or erroneous charges, issue a refund per POL-REFUND-001; no approval needed unless above 500 USD.",
+      "For pricing disputes, explain the price change and reference the plan terms; offer a callback if unresolved.",
+      "Confirm the refund amount and expected processing time (5-10 business days) to the customer."
+    ]
+  },
+  {
+    "guideline_id": "SOP-FEAT-01",
+    "category": "feature_request",
+    "title": "Handling Feature Requests",
+    "steps": [
+      "Thank the customer and restate the use case to confirm understanding.",
+      "Log the request on the product feedback board per POL-FEATURE-008.",
+      "Suggest existing workarounds if any exist.",
+      "Do not promise timelines."
+    ]
+  },
+  {
+    "guideline_id": "SOP-ACCT-01",
+    "category": "account_access",
+    "title": "Handling Account Access Problems",
+    "steps": [
+      "Verify identity before making any account changes.",
+      "Walk through password reset / SSO troubleshooting.",
+      "If account compromise is suspected, escalate to Security per POL-ESC-003."
+    ]
+  },
+  {
+    "guideline_id": "SOP-CHURN-01",
+    "category": "churn_risk",
+    "title": "Handling Churn Risk",
+    "steps": [
+      "Identify the root cause of dissatisfaction (open tickets, pricing, missing features).",
+      "Resolve or expedite any open tickets; escalate to CS Lead if two or more are unresolved beyond 14 days.",
+      "If eligible, present a retention offer per POL-RETENTION-005.",
+      "Notify the account manager for Enterprise customers within 1 business day."
+    ]
+  },
+  {
+    "guideline_id": "SOP-ABUSE-01",
+    "category": "abuse",
+    "title": "Handling Abusive or Policy-Violating Messages",
+    "steps": [
+      "Do not mirror tone; stay factual and courteous.",
+      "Separate the underlying issue from the abusive language and still triage the issue.",
+      "Send at most one conduct reminder per POL-ABUSE-004.",
+      "If there is a threat of violence or doxxing, pause the conversation and escalate to Security immediately."
+    ]
+  },
+  {
+    "guideline_id": "SOP-PRAISE-01",
+    "category": "praise",
+    "title": "Handling Positive Feedback",
+    "steps": [
+      "Thank the customer personally.",
+      "Log the feedback for the product/marketing team; ask permission before using it as a testimonial.",
+      "No further action required."
+    ]
+  },
+  {
+    "guideline_id": "SOP-GEN-01",
+    "category": "other",
+    "title": "General / Unclear Feedback Triage",
+    "steps": [
+      "If the feedback is too vague to act on, reply asking one specific clarifying question.",
+      "Route to a human triager if the category is still unclear after clarification.",
+      "Log the feedback for trend analysis."
+    ]
+  }
+]

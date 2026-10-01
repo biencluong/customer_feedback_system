@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feedback Triage Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="top">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <p class="brand-name">Feedback Triage Agent</p>
+        <p class="brand-sub">Classify · retrieve · report for CS</p>
+      </div>
+    </div>
+    <div class="status" id="health">
+      <span class="dot" id="health-dot"></span>
+      <span id="health-text">Checking…</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel input-panel">
+      <h1>Submit feedback</h1>
+      <p class="lede">Load a sample, upload a JSON file, or type a message. The agent classifies it, calls retrieval tools, and returns a grounded CS report.</p>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="samples" role="tab" aria-selected="true">Samples</button>
+        <button type="button" class="tab" data-tab="upload" role="tab" aria-selected="false">Upload JSON</button>
+        <button type="button" class="tab" data-tab="manual" role="tab" aria-selected="false">Manual</button>
+      </div>
+
+      <div class="tab-panel active" id="panel-samples">
+        <label class="field-label" for="sample-select">Sample input</label>
+        <select id="sample-select"></select>
+        <pre class="preview" id="sample-preview">Loading samples…</pre>
+      </div>
+
+      <div class="tab-panel" id="panel-upload">
+        <label class="dropzone" id="dropzone" for="file-input">
+          <input type="file" id="file-input" accept="application/json,.json" hidden />
+          <strong>Drop a .json file here</strong>
+          <span>or click to browse — same schema as <code>samples/inputs/*.json</code></span>
+          <span class="file-name" id="file-name"></span>
+        </label>
+        <pre class="preview" id="upload-preview" hidden></pre>
+      </div>
+
+      <div class="tab-panel" id="panel-manual">
+        <label class="field-label" for="text">Feedback text</label>
+        <textarea id="text" rows="6" placeholder="Describe the customer's message…"></textarea>
+        <div class="row">
+          <div>
+            <label class="field-label" for="customer-id">Customer ID</label>
+            <input id="customer-id" type="text" placeholder="C002" />
+          </div>
+          <div>
+            <label class="field-label" for="customer-email">Email</label>
+            <input id="customer-email" type="email" placeholder="alice@…" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label class="field-label" for="channel">Channel</label>
+            <select id="channel">
+              <option value="web_form">web_form</option>
+              <option value="email">email</option>
+              <option value="chat">chat</option>
+              <option value="phone">phone</option>
+              <option value="social">social</option>
+              <option value="app_review">app_review</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div>
+          <label class="field-label" for="simulate">Simulate failure (optional)</label>
+          <select id="simulate">
+            <option value="">None</option>
+            <option value="llm">All LLM stages</option>
+            <option value="classifier">Classifier only</option>
+            <option value="agent">Context agent only</option>
+            <option value="reporter">Reporter only</option>
+            <option value="customer_db">Customer DB outage</option>
+          </select>
+        </div>
+        <button type="button" class="run-btn" id="run-btn">
+          <span class="run-label">Run triage</span>
+          <span class="run-spinner" hidden></span>
+        </button>
+      </div>
+      <p class="error" id="error" hidden></p>
+    </section>
+
+    <section class="panel result-panel" id="result-panel">
+      <div class="empty" id="empty-state">
+        <h2>Waiting for a run</h2>
+        <p>Pick a sample and hit <strong>Run triage</strong>. The structured report and agent step trace will appear here.</p>
+      </div>
+
+      <div id="result" hidden>
+        <div class="result-head">
+          <div>
+            <p class="eyebrow" id="result-id"></p>
+            <h2 id="result-title">Triage report</h2>
+          </div>
+          <div class="badges" id="badges"></div>
+        </div>
+
+        <div class="result-tabs">
+          <button type="button" class="result-tab active" data-result="report">Report</button>
+          <button type="button" class="result-tab" data-result="trace">Agent trace</button>
+          <button type="button" class="result-tab" data-result="json">JSON</button>
+        </div>
+
+        <article class="report-view active" id="view-report"></article>
+        <div class="trace-view" id="view-trace" hidden></div>
+        <pre class="json-view" id="view-json" hidden></pre>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

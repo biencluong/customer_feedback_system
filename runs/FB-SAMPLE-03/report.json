@@ -1,0 +1,80 @@
+{
+  "feedback": {
+    "feedback_id": "FB-SAMPLE-03",
+    "text": "Honestly things just aren't working the way they used to. Kind of disappointed lately. Not sure it's worth what we pay anymore.",
+    "customer_id": "C004",
+    "customer_email": null,
+    "channel": "web_form",
+    "submitted_at": "2026-09-29T06:05:00Z"
+  },
+  "classification": {
+    "category": "other",
+    "secondary_category": null,
+    "sentiment": "neutral",
+    "urgency": "medium",
+    "confidence": 0.0,
+    "rationale": "Automatic classification unavailable (SimulatedLLMError: simulated classifier LLM failure); defaulted to manual triage."
+  },
+  "summary": "[Automatic summary unavailable - verbatim excerpt] Honestly things just aren't working the way they used to. Kind of disappointed lately. Not sure it's worth what we pay anymore.",
+  "customer_found": true,
+  "customer_context": "David Pham (C004), pro tier, customer for 26 months, health score 38, open tickets: T-1203, T-1231.",
+  "references": [
+    {
+      "source_id": "SOP-GEN-01",
+      "title": "General / Unclear Feedback Triage",
+      "relevance": "Retrieved for the assigned category; verify fit."
+    },
+    {
+      "source_id": "POL-SLA-002",
+      "title": "Support Response SLA",
+      "relevance": "Retrieved for the assigned category; verify fit."
+    },
+    {
+      "source_id": "POL-CREDIT-007",
+      "title": "Service Credit Policy",
+      "relevance": "Retrieved for the assigned category; verify fit."
+    }
+  ],
+  "suggested_actions": [
+    {
+      "action": "Read and triage this feedback manually; automated analysis was unavailable.",
+      "owner": "CS officer",
+      "basis": null,
+      "requires_approval": false
+    }
+  ],
+  "confidence": "low",
+  "needs_human_review": true,
+  "flags": [
+    {
+      "code": "CLASSIFIER_FAILED",
+      "detail": "SimulatedLLMError: simulated classifier LLM failure"
+    },
+    {
+      "code": "REPORT_GENERATION_FAILED",
+      "detail": "SimulatedLLMError: simulated reporter LLM failure"
+    },
+    {
+      "code": "AGENT_FALLBACK",
+      "detail": "Context gathered by fixed fallback plan, not the agent."
+    },
+    {
+      "code": "MODEL_UNCERTAINTY",
+      "detail": "Report produced without LLM analysis."
+    }
+  ],
+  "sources_consulted": [
+    "SOP-GEN-01",
+    "POL-CREDIT-007",
+    "POL-SLA-002"
+  ],
+  "degraded": true,
+  "generated_at": "2026-09-30T09:51:57.083259Z",
+  "review": {
+    "status": "pending_review",
+    "reviewer": null,
+    "decided_at": null,
+    "note": null,
+    "overrides": {}
+  }
+}

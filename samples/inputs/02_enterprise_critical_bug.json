@@ -1,0 +1,7 @@
+{
+  "feedback_id": "FB-SAMPLE-02",
+  "text": "Since this morning's update, CSV export fails with 'Error 500' for every user on our workspace. Our whole operations team (250 people) relies on the daily export to plan shipments and we have nothing today. We need this fixed ASAP.",
+  "customer_email": "alice.nguyen@northwind.example",
+  "channel": "chat",
+  "submitted_at": "2026-09-29T02:40:00Z"
+}

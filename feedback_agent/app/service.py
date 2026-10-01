@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..config import RUNS_DIR, Settings
-from ..models import FeedbackReport, FeedbackSubmission
+from ..models import Classification, FeedbackReport, FeedbackSubmission
 from ..agent.pipeline import run_pipeline
 from .render import report_to_markdown
 from ..observability.tracing import Tracer
@@ -24,6 +24,7 @@ def process_submission(
     simulate: Optional[str] = None,
     model: Optional[str] = None,
     verbose: bool = False,
+    classification_override: Optional[Classification] = None,
 ) -> Dict[str, Any]:
     """Run the pipeline, persist artifacts, and return report + markdown + trace events."""
     settings = Settings()
@@ -34,7 +35,13 @@ def process_submission(
     run_dir = root / submission.feedback_id
     tracer = Tracer(run_dir / "trace.jsonl", verbose=verbose)
 
-    report = run_pipeline(submission, settings=settings, tracer=tracer, simulate=simulate)
+    report = run_pipeline(
+        submission,
+        settings=settings,
+        tracer=tracer,
+        simulate=simulate,
+        classification_override=classification_override,
+    )
     markdown = report_to_markdown(report)
 
     run_dir.mkdir(parents=True, exist_ok=True)

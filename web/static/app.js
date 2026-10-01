@@ -10,6 +10,7 @@
     bindTabs();
     bindResultTabs();
     bindUpload();
+    bindClassificationRerun();
     $("run-btn").addEventListener("click", onRun);
     $("sample-select").addEventListener("change", renderSamplePreview);
     await Promise.all([loadHealth(), loadSamples()]);
@@ -172,6 +173,97 @@
     }
   }
 
+  const CATEGORIES = [
+    "bug_report",
+    "billing_issue",
+    "feature_request",
+    "account_access",
+    "churn_risk",
+    "abuse",
+    "praise",
+    "other",
+  ];
+  const URGENCIES = ["low", "medium", "high", "critical"];
+  const SENTIMENTS = ["positive", "neutral", "negative"];
+
+  function optionList(values, selected, includeBlank) {
+    const opts = [];
+    if (includeBlank) {
+      opts.push(`<option value=""${!selected ? " selected" : ""}>— none —</option>`);
+    }
+    for (const v of values) {
+      opts.push(`<option value="${v}"${v === selected ? " selected" : ""}>${v}</option>`);
+    }
+    return opts.join("");
+  }
+
+  function bindClassificationRerun() {
+    $("view-report").addEventListener("click", (e) => {
+      const btn = e.target.closest("#rerun-classification-btn");
+      if (!btn || btn.disabled) return;
+      onRerunWithClassification();
+    });
+  }
+
+  function readClassificationForm() {
+    const category = $("edit-category").value;
+    const secondary = $("edit-secondary").value || null;
+    const urgency = $("edit-urgency").value;
+    const sentiment = $("edit-sentiment").value;
+    let rationale = $("edit-rationale").value.trim();
+    if (!category) throw new Error("Category is required.");
+    if (!rationale) {
+      rationale = `Operator override: classified as ${category}.`;
+    } else if (!/operator override/i.test(rationale)) {
+      rationale = `Operator override. ${rationale}`;
+    }
+    return {
+      category,
+      secondary_category: secondary,
+      urgency,
+      sentiment,
+      confidence: 1.0,
+      rationale,
+    };
+  }
+
+  async function onRerunWithClassification() {
+    if (!lastResult || !lastResult.report) {
+      showError("Run triage once before adjusting classification.");
+      return;
+    }
+    clearError();
+    const btn = $("rerun-classification-btn");
+    const runBtn = $("run-btn");
+    try {
+      const classification = readClassificationForm();
+      const fb = lastResult.report.feedback;
+      if (btn) btn.disabled = true;
+      setLoading(true);
+      const result = await fetchJson("/api/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: fb.text,
+          customer_id: fb.customer_id || null,
+          customer_email: fb.customer_email || null,
+          channel: fb.channel || "web_form",
+          feedback_id: fb.feedback_id,
+          simulate: $("simulate").value || null,
+          classification,
+        }),
+      });
+      lastResult = result;
+      renderResult(result);
+    } catch (e) {
+      showError(e.message || String(e));
+      if (btn) btn.disabled = false;
+    } finally {
+      setLoading(false);
+      runBtn.disabled = false;
+    }
+  }
+
   function renderResult(result) {
     const r = result.report;
     $("empty-state").hidden = true;
@@ -230,13 +322,33 @@
       </div>
       <div class="block">
         <h3>Classification</h3>
-        <dl class="meta-grid">
-          <div><dt>Category</dt><dd>${escapeHtml(c.category)}${c.secondary_category ? ` / ${escapeHtml(c.secondary_category)}` : ""}</dd></div>
-          <div><dt>Urgency</dt><dd>${escapeHtml(c.urgency)}</dd></div>
-          <div><dt>Sentiment</dt><dd>${escapeHtml(c.sentiment)}</dd></div>
-          <div><dt>Classifier confidence</dt><dd>${Number(c.confidence).toFixed(2)}</dd></div>
-        </dl>
-        <p style="margin-top:0.75rem">${escapeHtml(c.rationale)}</p>
+        <p class="edit-hint">Adjust fields below and rerun to regenerate context + report with your classification (classifier is skipped).</p>
+        <div class="class-edit">
+          <label>
+            <span>Category</span>
+            <select id="edit-category">${optionList(CATEGORIES, c.category, false)}</select>
+          </label>
+          <label>
+            <span>Secondary</span>
+            <select id="edit-secondary">${optionList(CATEGORIES, c.secondary_category || "", true)}</select>
+          </label>
+          <label>
+            <span>Urgency</span>
+            <select id="edit-urgency">${optionList(URGENCIES, c.urgency, false)}</select>
+          </label>
+          <label>
+            <span>Sentiment</span>
+            <select id="edit-sentiment">${optionList(SENTIMENTS, c.sentiment, false)}</select>
+          </label>
+        </div>
+        <label class="field-label" for="edit-rationale">Rationale</label>
+        <textarea id="edit-rationale" rows="2">${escapeHtml(c.rationale)}</textarea>
+        <div class="confidence-callout" data-tone="${confidenceTone(c.confidence)}">
+          <span class="confidence-callout-label">Previous classifier confidence</span>
+          <strong class="confidence-callout-value">${Number(c.confidence).toFixed(2)}</strong>
+          <span class="confidence-callout-note">Override reruns use confidence 1.0</span>
+        </div>
+        <button type="button" class="rerun-btn" id="rerun-classification-btn">Rerun triage with this classification</button>
       </div>
       <div class="block">
         <h3>Summary</h3>
@@ -259,6 +371,13 @@
         ${flags}
       </div>
     `;
+  }
+
+  function confidenceTone(score) {
+    const n = Number(score);
+    if (n >= 0.8) return "high";
+    if (n >= 0.6) return "medium";
+    return "low";
   }
 
   function badge(text, tone) {

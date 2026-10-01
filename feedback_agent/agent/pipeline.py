@@ -11,7 +11,7 @@ from .classifier import classify, fallback_classification, is_ambiguous
 from ..config import Settings, build_llm
 from .context_agent import fallback_gather, gather_context
 from ..store.data_store import DataStore
-from ..models import FeedbackReport, FeedbackSubmission, Flag, ReportDraft
+from ..models import Classification, FeedbackReport, FeedbackSubmission, Flag, ReportDraft
 from .reporter import finalize_report, generate_draft
 from .tools import build_tools
 from ..observability.tracing import Tracer
@@ -36,6 +36,7 @@ def run_pipeline(
     tracer: Optional[Tracer] = None,
     simulate: Optional[str] = None,
     llm=None,
+    classification_override: Optional[Classification] = None,
 ) -> FeedbackReport:
     settings = settings or Settings()
     store = store or DataStore()
@@ -43,7 +44,13 @@ def run_pipeline(
     tools = build_tools(store, failing_tool="lookup_customer" if simulate == "customer_db" else None)
     stage_flags: List[Flag] = []
 
-    tracer.event("intake", submission=submission.model_dump(mode="json"), model=settings.model, simulate=simulate)
+    tracer.event(
+        "intake",
+        submission=submission.model_dump(mode="json"),
+        model=settings.model,
+        simulate=simulate,
+        classification_override=bool(classification_override),
+    )
 
     if llm is None:
         try:
@@ -58,13 +65,23 @@ def run_pipeline(
             raise RuntimeError("LLM client unavailable (are AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT set?)")
         return llm
 
-    # 1. Classification
-    try:
-        with tracer.span("classify"):
-            classification = classify(llm_for("classifier"), submission)
-    except Exception as e:
-        classification = fallback_classification(_short(e))
-        stage_flags.append(Flag(code="CLASSIFIER_FAILED", detail=_short(e)))
+    # 1. Classification (skip LLM when a human override is provided)
+    if classification_override is not None:
+        classification = classification_override
+        stage_flags.append(
+            Flag(
+                code="CLASSIFICATION_OVERRIDDEN",
+                detail="Classification provided by the operator; classifier stage skipped.",
+            )
+        )
+        tracer.event("classify.override", **classification.model_dump())
+    else:
+        try:
+            with tracer.span("classify"):
+                classification = classify(llm_for("classifier"), submission)
+        except Exception as e:
+            classification = fallback_classification(_short(e))
+            stage_flags.append(Flag(code="CLASSIFIER_FAILED", detail=_short(e)))
     ambiguous = is_ambiguous(classification, settings.ambiguity_threshold)
     tracer.event("classification", **classification.model_dump(), ambiguous=ambiguous)
 

@@ -5,54 +5,57 @@
     "customer_id": "C002",
     "customer_email": null,
     "channel": "email",
-    "submitted_at": "2026-09-29T08:15:00Z"
+    "submitted_at": "2026-10-01T08:43:56.382194Z"
   },
   "classification": {
     "category": "billing_issue",
     "secondary_category": null,
     "sentiment": "negative",
-    "urgency": "high",
-    "confidence": 0.95,
-    "rationale": "The feedback states 'I was charged twice for my Pro subscription' and requests a refund, indicating a billing issue with significant impact that needs same-day action."
+    "urgency": "critical",
+    "confidence": 1.0,
+    "rationale": "Operator override. The feedback states 'charged twice' and requests a refund for an 'extra charge,' indicating a billing issue with significant impact that needs same-day action."
   },
-  "summary": "The customer, Bob Tran, reports being charged twice for his Pro subscription on September 25th and requests a refund for the extra charge. Order history confirms two separate paid orders of $49 each for the same plan on that date, indicating a duplicate charge.",
+  "summary": "The customer, Bob Tran, reports being charged twice for the Pro subscription on September 25th and requests a refund for the extra $49 charge. Order history confirms two separate paid orders for the Pro plan on that date, each for $49, indicating a duplicate charge.",
   "customer_found": true,
-  "customer_context": "Customer record found: Bob Tran (C002), Pro plan, single seat, monthly spend $49, 15 months tenure. Two paid orders for the Pro plan on September 25th ($49 each, ORD-9120 and ORD-9121) confirm the duplicate charge. No open tickets; previous support contact was unrelated.",
+  "customer_context": "Customer record found: Bob Tran (C002), Pro plan, single account, 15 months tenure, $49 monthly spend. Two paid orders for the Pro plan on September 25th, each for $49, confirming the duplicate charge. No prior billing issues or open tickets.",
   "references": [
     {
       "source_id": "SOP-BILL-01",
       "title": "Handling Billing Issues",
-      "relevance": "Specifies steps for verifying duplicate charges and issuing refunds per policy."
+      "relevance": "Specifies steps for verifying duplicate charges and issuing refunds for erroneous charges without approval if under $500."
     },
     {
       "source_id": "POL-REFUND-001",
       "title": "Refund Policy",
-      "relevance": "Allows full refund for duplicate charges regardless of the 14-day window; no approval needed for refunds under $500."
+      "relevance": "Allows full refund for duplicate or erroneous charges regardless of the 14-day window; no approval needed for refunds under $500."
     }
   ],
   "suggested_actions": [
     {
       "action": "Issue a full refund of $49 for the duplicate Pro plan charge on September 25th and notify the customer of the expected processing time (5-10 business days).",
       "owner": "CS officer",
-      "basis": "POL-REFUND-001",
-      "requires_approval": false
-    },
-    {
-      "action": "Confirm to the customer that the duplicate charge has been refunded and provide details on the refund amount and processing timeline.",
-      "owner": "CS officer",
       "basis": "SOP-BILL-01",
       "requires_approval": false
     }
   ],
   "confidence": "high",
-  "needs_human_review": false,
-  "flags": [],
+  "needs_human_review": true,
+  "flags": [
+    {
+      "code": "CLASSIFICATION_OVERRIDDEN",
+      "detail": "Classification provided by the operator; classifier stage skipped."
+    },
+    {
+      "code": "HIGH_RISK",
+      "detail": "billing_issue / critical urgency."
+    }
+  ],
   "sources_consulted": [
     "SOP-BILL-01",
     "POL-REFUND-001"
   ],
   "degraded": false,
-  "generated_at": "2026-10-01T08:37:05.760523Z",
+  "generated_at": "2026-10-01T08:44:07.799053Z",
   "review": {
     "status": "pending_review",
     "reviewer": null,

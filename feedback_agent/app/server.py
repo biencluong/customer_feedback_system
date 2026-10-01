@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from ..config import ROOT_DIR, RUNS_DIR
-from ..models import Channel, FeedbackSubmission
+from ..models import Channel, Classification, FeedbackSubmission
 from ..agent.pipeline import SIMULATIONS
 from .service import load_report, load_trace, process_submission, submission_from_dict
 
@@ -37,12 +37,15 @@ class RunRequest(BaseModel):
     feedback_id: Optional[str] = None
     simulate: Optional[str] = None
     model: Optional[str] = None
+    # When set, skip the classifier and use this classification for gather + report.
+    classification: Optional[Classification] = None
 
 
 class SampleRunRequest(BaseModel):
     name: str
     simulate: Optional[str] = None
     model: Optional[str] = None
+    classification: Optional[Classification] = None
 
 
 class SampleInfo(BaseModel):
@@ -107,14 +110,24 @@ def create_app() -> FastAPI:
         }
         if body.feedback_id:
             data["feedback_id"] = body.feedback_id
-        return _run(submission_from_dict(data), simulate=body.simulate, model=body.model)
+        return _run(
+            submission_from_dict(data),
+            simulate=body.simulate,
+            model=body.model,
+            classification_override=body.classification,
+        )
 
     @app.post("/api/run/sample")
     def run_sample(body: SampleRunRequest) -> dict:
         if body.simulate and body.simulate not in SIMULATIONS:
             raise HTTPException(400, f"simulate must be one of {SIMULATIONS}")
         data = json.loads(_sample_path(body.name).read_text())
-        return _run(submission_from_dict(data), simulate=body.simulate, model=body.model)
+        return _run(
+            submission_from_dict(data),
+            simulate=body.simulate,
+            model=body.model,
+            classification_override=body.classification,
+        )
 
     @app.post("/api/run/upload")
     async def run_upload(
@@ -173,8 +186,20 @@ def _sample_path(name: str) -> Path:
     return path
 
 
-def _run(submission: FeedbackSubmission, *, simulate: Optional[str], model: Optional[str]) -> dict:
-    result = process_submission(submission, simulate=simulate, model=model, verbose=False)
+def _run(
+    submission: FeedbackSubmission,
+    *,
+    simulate: Optional[str],
+    model: Optional[str],
+    classification_override: Optional[Classification] = None,
+) -> dict:
+    result = process_submission(
+        submission,
+        simulate=simulate,
+        model=model,
+        verbose=False,
+        classification_override=classification_override,
+    )
     report = result["report"]
     return {
         "report": report.model_dump(mode="json"),

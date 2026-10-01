@@ -214,6 +214,46 @@ def test_tool_failure_is_reported_to_agent_not_raised(submission):
     assert not report.customer_found and report.confidence == "medium"
 
 
+def test_classification_override_skips_classifier(submission):
+    override = Classification(
+        category="feature_request",
+        secondary_category=None,
+        sentiment="neutral",
+        urgency="low",
+        confidence=1.0,
+        rationale="Operator override: classified as feature_request.",
+    )
+    # Structured outputs only for the reporter (classifier is skipped).
+    llm = FakeLLM(
+        agent_turns=[
+            AIMessage(content="", tool_calls=[_call("lookup_customer", {"customer_id": "C002"}, 1)]),
+            AIMessage(
+                content="",
+                tool_calls=[
+                    _call("get_cs_guideline", {"category": "feature_request"}, 2),
+                    _call("search_company_policy", {"query": "roadmap"}, 3),
+                ],
+            ),
+            AIMessage(content="gathered"),
+        ],
+        structured=[
+            ReportDraft(
+                summary="Customer wants a feature.",
+                customer_context="Bob Tran, pro tier.",
+                references=[],
+                suggested_actions=[
+                    SuggestedAction(action="Log feature request", owner="Product", basis=None, requires_approval=False)
+                ],
+                confidence="medium",
+            )
+        ],
+    )
+    report = run_pipeline(submission, llm=llm, classification_override=override)
+    assert report.classification.category == "feature_request"
+    assert report.classification.confidence == 1.0
+    assert any(f.code == "CLASSIFICATION_OVERRIDDEN" for f in report.flags)
+
+
 def test_review_gates_action_dispatch(tmp_path, submission):
     report = run_pipeline(submission, simulate="llm")
     path = tmp_path / "FB-T1" / "report.json"
